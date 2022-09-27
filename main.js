@@ -21,6 +21,17 @@ var ball = {
     dy:3
 }
 
+rightWristX = 0;
+rightWristY = 0;
+scoreRightWrist = 0;
+game_status = "";
+
+
+function preload(){
+  ball_touch_paddel = loadSound("ball_touch_paddel.wav");
+  missed = loadSound("missed.wav");
+}
+
 function setup(){
   var canvas =  createCanvas(700,600);
   canvas.parent('canvas');
@@ -31,9 +42,14 @@ function setup(){
   poseNet.on('pose', gotPoses);
 }
 
+
 function gotPoses(results){
+if(result.length > 0){
 rightWristX = results[0].pose.rightWrist.x;
 rightWristY = results[0].pose.rightWrist.y;
+scoreRightWrist = results[0].pose.keypoint[10].score;
+console.log(scoreRightWrist);
+}
 }
 
 function startGame(){
@@ -47,6 +63,7 @@ function modelLoaded(){
 }
 
 function draw(){
+  if(game_status == "start"){
 
  background(0); 
 
@@ -59,6 +76,11 @@ function draw(){
  fill("black");
  stroke("black");
  rect(0,0,20,700);
+ if(scoreRightWrist > 0.2){
+   fill("red");
+   stroke("red");
+   circle(rightWristX, rightWristY, 30);
+ }
  
    //funtion paddleInCanvas call 
    paddleInCanvas();
@@ -87,7 +109,8 @@ function draw(){
    
    //function move call which in very important
     move();
-}
+  }
+  }
 
 
 
